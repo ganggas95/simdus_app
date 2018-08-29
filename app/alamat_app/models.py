@@ -141,8 +141,12 @@ class Alamat(db.Model):
         foreign_keys=id_dusun,
         backref=db.backref('dusun_alamat')
     )
-    rt_rw = db.Column(db.String(4))
+    rt_rw = db.Column(db.String(10))
     kode_pos = db.Column(db.String(5))
+
+    @staticmethod
+    def get_by_id(id_alamat):
+        return Alamat.query.get(id_alamat)
 
     def desa(self):
         if self.dusun:
@@ -183,6 +187,10 @@ class Alamat(db.Model):
                 Kec.nama.like('%{}%'.format(search))
             )
         ).paginate(page, per_page=10)
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class AlamatForm(FlaskForm):
@@ -248,10 +256,31 @@ class AlamatForm(FlaskForm):
 
     def init_choices(self):
         prov = Provinsi.query.all()
-        kab = Kab.query.all()
+        kab = []
         kec = []
+        desa = []
+        dusun = []
+        if len(prov) > 0:
+            kab = Kab.get_by_prov(prov[0].id)
+        if len(kab) > 0:
+            kec = Kec.get_by_kab(kab[0].id)
+        if len(kec) > 0:
+            desa = Desa.get_by_kec(kec[0].id)
+        if len(desa) > 0:
+            dusun = Dusun.get_by_desa(desa[0].id)
+
         self.prov.choices = [(p.id, p.nama) for p in prov]
         self.kab.choices = [(k.id, k.nama) for k in kab]
         self.kec.choices = [(k.id, k.nama) for k in kec]
-        self.desa.choices = []
-        self.dusun.choices = []
+        self.desa.choices = [(d.id, d.nama) for d in desa]
+        self.dusun.choices = [(d.id, d.nama) for d in dusun]
+    
+    def default_data(self, data):
+
+        self.prov.process_data(data.prov().id)
+        self.kab.process_data(data.kab().id)
+        self.kec.process_data(data.kec().id)
+        self.desa.process_data(data.desa().id)
+        self.dusun.process_data(data.dusun.id)
+        self.rt_rw.process_data(data.rt_rw)
+        self.kode_pos.process_data(data.kode_pos)

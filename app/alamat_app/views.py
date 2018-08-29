@@ -1,5 +1,7 @@
 from flask import (
     render_template,
+    redirect,
+    url_for,
     request)
 from app.helpers import BaseView
 from .models import (
@@ -29,4 +31,37 @@ class AddAlamatView(BaseView):
                 self.template_name,
                 form=form,
                 kab_id=1
+            )
+        if form.validate_on_submit:
+            alamat = Alamat()
+            alamat.id_dusun = form.dusun.data
+            alamat.rt_rw = form.rt_rw.data
+            alamat.kode_pos = form.kode_pos.data
+            alamat.save()
+            return redirect(
+                url_for('alamat_bp.alamat_view')
+            )
+
+
+class EditAlamatView(BaseView):
+    def dispatch_request(self, id_alamat):
+        form = AlamatForm(request.form)
+        alamat = Alamat.get_by_id(id_alamat)
+        if request.method == 'GET':
+            form.init_choices()
+            if alamat:
+                form.default_data(alamat)
+            return render_template(
+                self.template_name,
+                form=form,
+                kab_id=1
+            )
+        if form.validate_on_submit:
+            
+            alamat.id_dusun = form.dusun.data
+            alamat.rt_rw = form.rt_rw.data
+            alamat.kode_pos = form.kode_pos.data
+            alamat.save()
+            return redirect(
+                url_for('alamat_bp.alamat_view')
             )
