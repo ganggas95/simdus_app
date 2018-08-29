@@ -1,0 +1,88 @@
+{% extends 'base/layout.html' %} {% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Data Alamat
+            <small>List data alamat</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> Home</a>
+            </li>
+            <li>
+                <a href="#">Alamat</a>
+            </li>
+            <li class="active">List</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Data Alamat</h3>
+                        <div class="pull-right">
+                            <div class="form-inline" style="display: flex">
+                                <form action="" method="GET" style="margin-right: 10px">
+                                    <div class="form-group">
+                                        <input type="text" name="search" value="{{search}}" class="form-control" placeholder="Cari data keluarga di sini...">
+                                    </div>
+                                </form>
+                                <a href="{{url_for('alamat_bp.add_alamat_view')}}" class="btn btn-primary">
+                                    <i class="fa fa-plus fa-fw"></i>
+                                    Tambah Data
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Provinsi</th>
+                                    <th>Kab</th>
+                                    <th>Kec</th>
+                                    <th>Desa</th>
+                                    <th>Dusun</th>
+                                    <th>RT/RW</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if data|length>=1%} {% for d in data %}
+                                <tr>
+                                    <td>{{loop.index}}</td>
+
+                                    <td>{{d.prov().nama}}</td>
+                                    <td>{{d.kab().nama}}</td>
+                                    <td>{{d.kec().nama}}</td>
+                                    <td>{{d.desa().nama}}</td>
+                                    <td>{{d.dusun.nama}}</td>
+                                    <td>{{d.rt_rw}}</td>
+
+                                </tr>
+                                {% endfor %} {% else %}
+                                <tr>
+                                    <td colspan="9" style="text-align: center">
+                                        Data kosong/tidak ditemukan
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

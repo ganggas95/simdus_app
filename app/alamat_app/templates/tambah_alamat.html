@@ -1,0 +1,200 @@
+{% extends 'base/layout.html' %} {% block page_css %}
+<!-- jvectormap -->
+<link rel="stylesheet" href="{{url_for('static', filename='bower_components/select2/dist/css/select2.min.css')}}"> {% endblock
+%} {% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Tambah Alamat
+            <small>Tambah data alamat</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> Home</a>
+            </li>
+            <li>
+                <a href="#">Alamat</a>
+            </li>
+            <li class="active">List</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <!-- <h3 class="box-title">Data Alamat</h3> -->
+                        <div class="pull-right">
+                            <div>
+                                <a href="{{url_for('alamat_bp.alamat_view')}}" class="btn btn-warning">
+                                    <i class="fa fa-ban fa-fw"></i>
+                                    Batal
+                                </a>
+                                <a href="#" class="btn btn-primary">
+                                    <i class="fa fa-save fa-fw"></i>
+                                    Simpan Data
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body row">
+
+                        <div class="form-group col-sm-12 col-md-6">
+                            {{form.prov.label}} {{form.prov}}
+                        </div>
+                        <div class="form-group col-sm-12 col-md-6">
+                            {{form.kab.label}} {{form.kab}}
+                        </div>
+                        <div class="form-group col-sm-12 col-md-6">
+                            {{form.kec.label}} {{form.kec}}
+                        </div>
+                        <div class="form-group col-sm-12 col-md-6">
+                            {{form.desa.label}} {{form.desa}}
+                        </div>
+                        <div class="form-group col-sm-12 col-md-4">
+                            {{form.dusun.label}} {{form.dusun}}
+                        </div>
+                        <div class="form-group col-sm-12 col-md-4">
+                            {{form.rt_rw.label}} {{form.rt_rw}}
+                        </div>
+                        <div class="form-group col-sm-12 col-md-4">
+                            {{form.kode_pos.label}} {{form.kode_pos}}
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %} {% block page_script %}
+<script src="{{url_for('static', filename='bower_components/select2/dist/js/select2.min.js')}}"></script>
+<script>
+    $(document).ready(() => {
+        $('.select2').select2();
+        var kab_id = parseInt("{{kab_id}}"),
+            kec_id = null,
+            desa_id = null,
+            $kab_select = $('.select2#kab'),
+            $kec_select = $('.select2#kec'),
+            $desa_select = $('.select2#desa'),
+            $dusun_select = $('.select2#dusun');
+
+        $kab_select.change((e) => {
+            e.preventDefault();
+            kab_id = parseInt($(e.target).val());
+            get_kec_source(kab_id, (data) => {
+                var sources = [];
+                clear_kec_source();
+                for (var i = 0; i < data.length; i++) {
+                    sources.push({
+                        id: data[i].id,
+                        text: data[i].nama
+                    })
+                }
+                $kec_select.select2({
+                    data: sources
+                })
+            })
+        })
+
+        $kec_select.change((e) => {
+            e.preventDefault();
+            kec_id = parseInt($(e.target).val());
+            get_desa_source(kec_id, (data) => {
+                var sources = [];
+                clear_desa_source();
+                for (var i = 0; i < data.length; i++) {
+                    sources.push({
+                        id: data[i].id,
+                        text: data[i].nama
+                    })
+                }
+                $desa_select.select2({
+                    data: sources
+                })
+            })
+        })
+
+        $desa_select.change((e) => {
+            e.preventDefault();
+            desa_id = parseInt($(e.target).val());
+            get_dusun_source(desa_id, (data) => {
+                var sources = [];
+                clear_dusun_source();
+                for (var i = 0; i < data.length; i++) {
+                    sources.push({
+                        id: data[i].id,
+                        text: data[i].nama
+                    })
+                }
+                $dusun_select.select2({
+                    data: sources
+                })
+            })
+        })
+
+        function clear_kec_source() {
+            $kec_select.find('option').remove();
+        }
+
+        function clear_desa_source() {
+            $desa_select.find('option').remove();
+        }
+
+        function clear_dusun_source() {
+            $dusun_select.find('option').remove();
+        }
+
+
+        function get_kec_source(kab_id, func) {
+            fetch(`/api/v0.1/alamat/kecamatan/${kab_id}/data`, {
+                method: 'GET',
+                credentials: "same-origin"
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (typeof (func) == 'function') {
+                        func(res.data)
+                    } else {
+                        func([])
+                    }
+                });
+        }
+        function get_desa_source(kec_id, func) {
+            fetch(`/api/v0.1/alamat/desa/${kec_id}/data`, {
+                credentials: "same-origin"
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (typeof (func) == 'function') {
+                        func(res.data)
+                    } else {
+                        func([])
+                    }
+                });
+        }
+        function get_dusun_source(desa_id, func) {
+            fetch(`/api/v0.1/alamat/dusun/${desa_id}/data`, {
+                credentials: "same-origin"
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (typeof (func) == 'function') {
+                        func(res.data)
+                    } else {
+                        func([])
+                    }
+                });
+        }
+    });
+
+</script> {% endblock %}

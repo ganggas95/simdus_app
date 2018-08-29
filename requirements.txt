@@ -1,0 +1,11 @@
+flask
+flask-sqlalchemy
+pymysql
+pandas
+flask-restplus
+flask-migrate
+flask-script
+flask-user==0.6.21
+flask-wtf
+flask-marshmallow
+marshmallow-sqlalchemy
