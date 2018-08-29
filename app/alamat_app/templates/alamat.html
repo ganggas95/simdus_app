@@ -30,7 +30,7 @@
                             <div class="form-inline" style="display: flex">
                                 <form action="" method="GET" style="margin-right: 10px">
                                     <div class="form-group">
-                                        <input type="text" name="search" value="{{search}}" class="form-control" placeholder="Cari data keluarga di sini...">
+                                        <input type="text" name="search" value="{{search}}" class="form-control" placeholder="Cari data alamat di sini...">
                                     </div>
                                 </form>
                                 <a href="{{url_for('alamat_bp.add_alamat_view')}}" class="btn btn-primary">
@@ -52,7 +52,7 @@
                                     <th>Desa</th>
                                     <th>Dusun</th>
                                     <th>RT/RW</th>
-                                    <th>#</th>
+                                    <th class="text-center">#</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,7 +66,11 @@
                                     <td>{{d.desa().nama}}</td>
                                     <td>{{d.dusun.nama}}</td>
                                     <td>{{d.rt_rw}}</td>
-
+                                    <td class="text-center">
+                                        <a class="btn btn-info btn-sm btn-flat" href="{{url_for('alamat_bp.edit_alamat_view', id_alamat=d.id)}}">
+                                            <i class="fa fa-pencil fa-fw"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                                 {% endfor %} {% else %}
                                 <tr>

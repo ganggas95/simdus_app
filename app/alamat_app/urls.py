@@ -4,7 +4,8 @@ from .blueprint import (
     api_alamat)
 from .views import (
     AlamatView,
-    AddAlamatView)
+    AddAlamatView,
+    EditAlamatView)
 from .api import alamat_ns
 
 
@@ -20,7 +21,16 @@ alamat_bp.add_url_rule(
     view_func=AddAlamatView.as_view(
         'add_alamat_view',
         'tambah_alamat.html'
-    )
+    ),
+    methods=['GET', 'POST']
+)
+alamat_bp.add_url_rule(
+    '/admin/alamat/<int:id_alamat>/detail',
+    view_func=EditAlamatView.as_view(
+        'edit_alamat_view',
+        'edit_alamat.html'
+    ),
+    methods=['GET', 'POST']
 )
 
 api_alamat.add_namespace(alamat_ns)
